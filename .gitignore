@@ -6,6 +6,7 @@
 # Packages
 .eggs
 *.egg
+.cache
 *.egg-info
 dist
 build

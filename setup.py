@@ -3,7 +3,7 @@
 
 import sys
 
-from setuptools import setup
+from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
 
@@ -25,7 +25,8 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 requirements = [
     'tornado',
     'sqlalchemy',
-    'pysd==0.1.0'
+    'pysd==0.1.1',
+    'pandas==0.18.1'
 ]
 
 test_requirements = [
@@ -40,17 +41,13 @@ test_requirements = [
 
 setup(
     name='diffservice',
-    version='0.1.0',
+    version='0.1.1',
     description='Service for compare Data and build reports',
     long_description=readme + '\n\n' + history,
     author='Giuseppe Acito',
     author_email='giuseppe.acito@gmail.com',
     url='https://github.com/giupo/diffservice',
-    packages=[
-        'diffservice',
-    ],
-    package_dir={'diffservice':
-                 'diffservice'},
+    packages=find_packages(exclude="tests/*"),
     include_package_data=True,
     install_requires=requirements,
     license="BSD",
@@ -68,6 +65,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     dependency_links=[
-        'https://github.com/giupo/pysd/tarball/master#egg=pysd-0.1.0'
+        'https://github.com/giupo/pysd/tarball/master#egg=pysd-0.1.1'
     ]
 )

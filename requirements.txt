@@ -28,6 +28,7 @@ netifaces==0.10.5
 notifier==1.0.3
 oslo.i18n==3.9.0
 oslo.utils==3.16.0
+pandas==0.18.1
 parse==1.6.6
 parse-type==0.3.4
 pathtools==0.1.2
