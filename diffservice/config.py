@@ -59,4 +59,3 @@ log.info("Starting with the following config properties:")
 for section in config.sections():
     for key, val in config.items(section):
         log.info('[%s] %s=%s' % (section, key, val))
-        

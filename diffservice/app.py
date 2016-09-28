@@ -2,5 +2,5 @@
 
 from applogging import getLogger
 from pysd.discovery import sd
-log = getLogger(__name__)
 
+log = getLogger(__name__)

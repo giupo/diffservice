@@ -17,4 +17,3 @@ log.debug("log init complete")
 
 def getLogger(key):
     return logging.getLogger(key)
-
