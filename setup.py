@@ -25,7 +25,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 requirements = [
     'tornado',
     'sqlalchemy',
-    'pysd==0.1.1',
+    'pysd==0.1.0',
     'pandas==0.18.1'
 ]
 
@@ -64,7 +64,12 @@ setup(
     cmdclass={'test': PyTest},
     test_suite='tests',
     tests_require=test_requirements,
+    entry_points={
+        'console_scripts': [
+            'diffservice=diffservice.app:main'
+        ]
+    },
     dependency_links=[
-        'https://github.com/giupo/pysd/tarball/master#egg=pysd-0.1.1'
+        'https://github.com/giupo/pysd/tarball/master#egg=pysd-0.1.0'
     ]
 )

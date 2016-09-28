@@ -23,8 +23,9 @@ except:
 
 import os
 from tornado.options import define, options, parse_command_line
-
+from socket import gethostname
 from applogging import getLogger
+
 log = getLogger(__name__)
 
 DEFAULT_REDIS_HOST = "localhost"
@@ -33,12 +34,19 @@ DEFAULT_DB_URL = "sqlite://"
 DEFAULT_NPROC = 1
 DEFAULT_CONFIG_FILE_PATH = os.path.join(os.path.expanduser("~"),
                                         ".diffservice", "config.ini")
+DEFAULT_LISTEN_ADDRESS = gethostname()
+DEFAULT_LISTEN_PORT = 9100
+DEFAULT_PROTOCOL = "http"
 
 define("redisHost", default=DEFAULT_REDIS_HOST, help="Redis host")
 define("redisPort", default=DEFAULT_REDIS_PORT, type=int, help="Redis port")
 define("DBURL", default=DEFAULT_DB_URL, help="DB connection url")
 define("nproc", default=DEFAULT_NPROC, type=int, help="Numero processi")
 define("config", default=DEFAULT_CONFIG_FILE_PATH, help="Path to config file")
+define("addr", default=DEFAULT_LISTEN_ADDRESS, help="listen address")
+define("port", default=DEFAULT_LISTEN_PORT, help="listen port")
+define("protocol", default=DEFAULT_PROTOCOL,
+       help="protocol ('http' or 'https'")
 
 parse_command_line()
 
@@ -51,6 +59,11 @@ config.set('DB', 'url', options.DBURL)
 config.set('Redis', 'host', options.redisHost)
 config.set('Redis', 'port', str(options.redisPort))
 config.set('General', 'nproc', str(options.nproc))
+config.set('General', 'addr', str(options.addr))
+config.set('General', 'port', str(options.port))
+config.set('General', 'protocol', str(options.protocol))
+config.set('General', 'servicename', 'DiffService')
+config.set('General', 'context', '/diffservice')
 
 if os.path.isfile(options.config):
     config.read(options.config)
