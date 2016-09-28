@@ -34,7 +34,7 @@ DEFAULT_DB_URL = "sqlite://"
 DEFAULT_NPROC = 1
 DEFAULT_CONFIG_FILE_PATH = os.path.join(os.path.expanduser("~"),
                                         ".diffservice", "config.ini")
-DEFAULT_LISTEN_ADDRESS = gethostname()
+DEFAULT_LISTEN_ADDRESS = "127.0.0.1" or gethostname()
 DEFAULT_LISTEN_PORT = 9100
 DEFAULT_PROTOCOL = "http"
 
@@ -58,12 +58,12 @@ config.add_section('General')
 config.set('DB', 'url', options.DBURL)
 config.set('Redis', 'host', options.redisHost)
 config.set('Redis', 'port', str(options.redisPort))
+config.set('Redis', 'worker_queue', 'diff_service_worker_queue')
 config.set('General', 'nproc', str(options.nproc))
 config.set('General', 'addr', str(options.addr))
 config.set('General', 'port', str(options.port))
 config.set('General', 'protocol', str(options.protocol))
 config.set('General', 'servicename', 'DiffService')
-config.set('General', 'context', '/diffservice')
 
 if os.path.isfile(options.config):
     config.read(options.config)

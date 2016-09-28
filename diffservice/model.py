@@ -4,23 +4,37 @@ import logging
 import datetime
 import json
 
-from applogging import getLogger
-log = getLogger(__name__)
+from contextlib import contextmanager
 
 from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy import Text, ForeignKey, Boolean, Float
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import Text, ForeignKey, Float, Enum
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import sessionmaker, relationship, scoped_session
 from sqlalchemy.orm.session import object_session
 
+from applogging import getLogger
 from config import config
+
+log = getLogger(__name__)
 
 engine = create_engine(config.get('DB', 'url'),
                        echo=log.level < logging.INFO)
-Session = sessionmaker(bind=engine)
+Session = scoped_session(sessionmaker(bind=engine))
 Base = declarative_base()
+
+
+@contextmanager
+def session_scope():
+    session = Session()
+    try:
+        yield session
+        session.commit()
+    except:
+        session.rollback()
+        raise
+    finally:
+        session.close()
 
 
 class JsonMixin(object):
@@ -38,6 +52,10 @@ class SQLAlchemyDictView(object):
         return d
 
 
+RequestStatus = ('PENDING', 'RUNNING', 'ERROR', 'DONE')
+status_enum = Enum(*RequestStatus, name="diff_status")
+
+
 class DiffRequest(Base, JsonMixin, SQLAlchemyDictView):
     __tablename__ = "diff_request"
     id = Column(Integer, primary_key=True)
@@ -48,6 +66,14 @@ class DiffRequest(Base, JsonMixin, SQLAlchemyDictView):
     who = Column(String, nullable=False)
     when = Column(DateTime, nullable=False,
                   default=datetime.datetime.utcnow)
+    status = Column(status_enum, nullable=False, default=RequestStatus[0])
+
+    def __init__(self, **args):
+        self.update(**args)
+
+    def update(self, **args):
+        for k, v in args.iteritems():
+            setattr(self, k, v)
 
     @property
     def num(self):

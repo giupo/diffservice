@@ -26,7 +26,8 @@ requirements = [
     'tornado',
     'sqlalchemy',
     'pysd==0.1.0',
-    'pandas==0.18.1'
+    'pandas==0.18.1',
+    'redis'
 ]
 
 test_requirements = [
