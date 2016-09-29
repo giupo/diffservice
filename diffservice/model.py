@@ -48,9 +48,15 @@ class SQLAlchemyDictView(object):
     def to_dict(self):
         d = {}
         for column in self.__table__.columns:
-            d[column.name] = str(getattr(self, column.name))
+            obj = getattr(self, column.name)
+            if isinstance(obj, datetime.datetime):
+                obj = str(obj)
+            d[column.name] = obj
         return d
 
+    def update(self, **args):
+        for k, v in args.iteritems():
+            setattr(self, k, v)
 
 RequestStatus = ('PENDING', 'RUNNING', 'ERROR', 'DONE')
 status_enum = Enum(*RequestStatus, name="diff_status")
@@ -71,10 +77,6 @@ class DiffRequest(Base, JsonMixin, SQLAlchemyDictView):
     def __init__(self, **args):
         self.update(**args)
 
-    def update(self, **args):
-        for k, v in args.iteritems():
-            setattr(self, k, v)
-
     @property
     def num(self):
         session = object_session(self)
@@ -89,6 +91,9 @@ class DiffResult(Base, JsonMixin, SQLAlchemyDictView):
     request_id = Column(Integer, ForeignKey('diff_request.id'))
     request = relationship("DiffRequest")
     result_json = Column(Text)
+
+    def __init__(self, **args):
+        self.update(**args)
 
     @property
     def result(self):

@@ -6,7 +6,7 @@ import tornado.web
 import tornado.escape
 
 from applogging import getLogger
-from model import DiffRequest, session_scope
+from model import DiffRequest, DiffResult, session_scope
 from backend import Queue
 
 log = getLogger(__name__)
@@ -37,10 +37,14 @@ class DiffRequestsHandler(tornado.web.RequestHandler):
         self.set_header('Access-Control-Allow-Origin', '*')
 
     @classmethod
+    def context(cls):
+        return '/requests'
+
+    @classmethod
     def routes(cls):
         return [
-            (r'/requests/(\d*)', cls),
-            (r'/requests', cls)
+            (cls.context()+'/(\\d+)', cls),
+            (cls.context(), cls)
         ]
 
     def get(self, id=None):
@@ -56,6 +60,7 @@ class DiffRequestsHandler(tornado.web.RequestHandler):
         self.finish(json.dumps(result))
 
     def post(self):
+        log.info(self.request.body)
         params = {k: self.get_argument(k) for k in self.request.arguments}
         params.update(tornado.escape.json_decode(self.request.body or '{}'))
         log.debug('Params received: %s', str(params))
@@ -69,6 +74,7 @@ class DiffRequestsHandler(tornado.web.RequestHandler):
 
     def put(self, id):
         params = {k: self.get_argument(k) for k in self.request.arguments}
+        params.update(tornado.escape.json_decode(self.request.body or '{}'))
         log.debug('Params received: %s', str(params))
         with session_scope() as s:
             request = s.query(DiffRequest).filter_by(id=id).first()
@@ -81,6 +87,74 @@ class DiffRequestsHandler(tornado.web.RequestHandler):
     def delete(self, id):
         with session_scope() as s:
             request = s.query(DiffRequest).filter_by(id=id).first()
+            if request is None:
+                raise tornado.web.HTTPError(404)
+            s.delete(request)
+            s.commit()
+            self.set_status(204)
+            self.finish()
+
+
+class DiffResultsHandler(tornado.web.RequestHandler):
+    """
+    Handles the diffResults computed from the backend
+    """
+
+    def set_default_headers(self):
+        self.set_header('Content-Type', 'application/json')
+        self.set_header('Access-Control-Allow-Origin', '*')
+
+    @classmethod
+    def context(cls):
+        return '/results'
+
+    @classmethod
+    def routes(cls):
+        return [
+            (cls.context() + '/(\\d+)', cls),
+            (cls.context(), cls)
+        ]
+
+    def get(self, id=None):
+        with session_scope() as s:
+            if id is None:
+                result = [x.to_dict() for x in s.query(DiffResult).all()]
+            else:
+                result = s.query(DiffResult).filter_by(id=id).first()
+                if result is None:
+                    raise tornado.web.HTTPError(404)
+                result = result.to_dict()
+
+        self.finish(json.dumps(result))
+
+    def post(self):
+        log.info(self.request.body)
+        params = {k: self.get_argument(k) for k in self.request.arguments}
+        params.update(tornado.escape.json_decode(self.request.body or '{}'))
+        log.debug('Params received: %s', str(params))
+        request = DiffResult(**params)
+        with session_scope() as s:
+            s.add(request)
+            s.commit()
+            Queue.post(request)
+            self.set_status(201)
+            self.finish(request.to_json())
+
+    def put(self, id):
+        params = {k: self.get_argument(k) for k in self.request.arguments}
+        params.update(tornado.escape.json_decode(self.request.body or '{}'))
+        log.debug('Params received: %s', str(params))
+        with session_scope() as s:
+            result = s.query(DiffResult).filter_by(id=id).first()
+            if result is None:
+                raise tornado.web.HTTPError(404)
+            result.update(**params)
+            s.commit()
+            self.finish(result.to_json())
+
+    def delete(self, id):
+        with session_scope() as s:
+            request = s.query(DiffResult).filter_by(id=id).first()
             if request is None:
                 raise tornado.web.HTTPError(404)
             s.delete(request)

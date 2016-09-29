@@ -27,8 +27,14 @@ requirements = [
     'sqlalchemy',
     'pysd==0.1.0',
     'pandas==0.18.1',
-    'redis'
+    'redis',
+    'requests'
 ]
+
+if sys.version_info < (3, 0):
+    requirements.extend([
+        'futures'
+    ])
 
 test_requirements = [
     'pytest',
@@ -36,6 +42,7 @@ test_requirements = [
     'pytest-bdd',
     'pytest-xdist',
     'pytest-watch',
+    'pytest-tornado',
     'tox',
     'detox'
 ]

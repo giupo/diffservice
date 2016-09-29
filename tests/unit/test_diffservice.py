@@ -18,7 +18,7 @@ class TestDiffservice(unittest.TestCase):
         pass
 
     def test_something(self):
-        pass
+        assert 1
 
     def tearDown(self):
         pass

@@ -11,17 +11,24 @@ from applogging import getLogger
 from pysd.discovery import Service
 from config import config
 from controllers import DiffRequestsHandler, AdminHandler
+from controllers import DiffResultsHandler
 
 log = getLogger(__name__)
 
 routes = []
 routes.extend(AdminHandler.routes())
 routes.extend(DiffRequestsHandler.routes())
+routes.extend(DiffResultsHandler.routes())
 
 settings = {
 }
 
-application = tornado.web.Application(routes, **settings)
+
+def makeApp():
+    global routes
+    global settings
+    application = tornado.web.Application(routes, **settings)
+    return application
 
 
 def on_shutdown():
@@ -41,7 +48,7 @@ def startWebServer():
     global service
 
     log.debug("Starting web server")
-    server = tornado.httpserver.HTTPServer(application)
+    server = tornado.httpserver.HTTPServer(makeApp())
     port = config.getint('General', 'port')
     while True:
         try:

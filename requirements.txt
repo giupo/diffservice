@@ -9,7 +9,7 @@ coverage==4.2
 debtcollector==1.8.0
 decorator==4.0.10
 detox==0.10.0
--e git+git@github.com:giupo/diffservice.git@a9c8638881525866bdc212bf84e4d70f311c6abc#egg=diffservice
+-e git+git@github.com:giupo/diffservice.git@2b009aecc73e168af1a2884578fbd5a7d3bc468d#egg=diffservice
 docopt==0.6.2
 enum34==1.1.6
 eventlet==0.19.0
@@ -48,13 +48,15 @@ pysd==0.1.0
 pytest==3.0.2
 pytest-bdd==2.18.0
 pytest-cov==2.3.1
-pytest-notifier==0.3
+pytest-notifier==0.3.1
+pytest-tornado==0.4.5
 pytest-watch==4.1.0
 pytest-xdist==1.15.0
 python-dateutil==2.5.3
 pytz==2016.6.1
 PyYAML==3.12
 redis==2.10.5
+requests==2.11.1
 scipy==0.18.1
 singledispatch==3.4.0.3
 six==1.10.0

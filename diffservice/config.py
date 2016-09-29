@@ -55,15 +55,21 @@ config.add_section('DB')
 config.add_section('Redis')
 config.add_section('General')
 
-config.set('DB', 'url', options.DBURL)
-config.set('Redis', 'host', options.redisHost)
-config.set('Redis', 'port', str(options.redisPort))
-config.set('Redis', 'worker_queue', 'diff_service_worker_queue')
-config.set('General', 'nproc', str(options.nproc))
-config.set('General', 'addr', str(options.addr))
-config.set('General', 'port', str(options.port))
-config.set('General', 'protocol', str(options.protocol))
-config.set('General', 'servicename', 'DiffService')
+
+def restoreConfig():
+    """Restore config params (mainly used for test purposes"""
+    global config
+    config.set('DB', 'url', options.DBURL)
+    config.set('Redis', 'host', options.redisHost)
+    config.set('Redis', 'port', str(options.redisPort))
+    config.set('Redis', 'worker_queue', 'diff_service_worker_queue')
+    config.set('General', 'nproc', str(options.nproc))
+    config.set('General', 'addr', str(options.addr))
+    config.set('General', 'port', str(options.port))
+    config.set('General', 'protocol', str(options.protocol))
+    config.set('General', 'servicename', 'DiffService')
+
+restoreConfig()
 
 if os.path.isfile(options.config):
     config.read(options.config)
