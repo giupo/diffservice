@@ -1,5 +1,12 @@
 # -*- coding:utf-8 -*-
 
+"""
+test_diffrequest
+----------------------------------
+
+Tests for `DiffRequestHandler` class.
+"""
+
 import json
 import pytest
 

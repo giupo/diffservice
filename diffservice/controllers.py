@@ -8,6 +8,7 @@ import tornado.escape
 from applogging import getLogger
 from model import DiffRequest, DiffResult, session_scope
 from backend import Queue
+from config import config
 
 log = getLogger(__name__)
 
@@ -38,7 +39,10 @@ class DiffRequestsHandler(tornado.web.RequestHandler):
 
     @classmethod
     def context(cls):
-        return '/requests'
+        _context = config.get('General', 'request_url', '/requests')
+        if _context[0] != '/':
+            _context = '/' + _context
+        return _context
 
     @classmethod
     def routes(cls):
@@ -106,7 +110,10 @@ class DiffResultsHandler(tornado.web.RequestHandler):
 
     @classmethod
     def context(cls):
-        return '/results'
+        _context = config.get('General', 'results_url', '/results')
+        if _context[0] != '/':
+            _context = '/' + _context
+        return _context
 
     @classmethod
     def routes(cls):
@@ -132,13 +139,12 @@ class DiffResultsHandler(tornado.web.RequestHandler):
         params = {k: self.get_argument(k) for k in self.request.arguments}
         params.update(tornado.escape.json_decode(self.request.body or '{}'))
         log.debug('Params received: %s', str(params))
-        request = DiffResult(**params)
+        res = DiffResult(**params)
         with session_scope() as s:
-            s.add(request)
+            s.add(res)
             s.commit()
-            Queue.post(request)
             self.set_status(201)
-            self.finish(request.to_json())
+            self.finish(res.to_json())
 
     def put(self, id):
         params = {k: self.get_argument(k) for k in self.request.arguments}
@@ -154,10 +160,10 @@ class DiffResultsHandler(tornado.web.RequestHandler):
 
     def delete(self, id):
         with session_scope() as s:
-            request = s.query(DiffResult).filter_by(id=id).first()
-            if request is None:
+            res = s.query(DiffResult).filter_by(id=id).first()
+            if res is None:
                 raise tornado.web.HTTPError(404)
-            s.delete(request)
+            s.delete(res)
             s.commit()
             self.set_status(204)
             self.finish()

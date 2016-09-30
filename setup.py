@@ -74,7 +74,8 @@ setup(
     tests_require=test_requirements,
     entry_points={
         'console_scripts': [
-            'diffservice=diffservice.app:main'
+            'diffservice=diffservice.app:main',
+            'diffbackend=diffservice.backend:main'
         ]
     },
     dependency_links=[

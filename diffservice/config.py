@@ -46,7 +46,7 @@ define("config", default=DEFAULT_CONFIG_FILE_PATH, help="Path to config file")
 define("addr", default=DEFAULT_LISTEN_ADDRESS, help="listen address")
 define("port", default=DEFAULT_LISTEN_PORT, help="listen port")
 define("protocol", default=DEFAULT_PROTOCOL,
-       help="protocol ('http' or 'https'")
+       help="protocol ('http' or 'https')")
 
 parse_command_line()
 
@@ -68,6 +68,12 @@ def restoreConfig():
     config.set('General', 'port', str(options.port))
     config.set('General', 'protocol', str(options.protocol))
     config.set('General', 'servicename', 'DiffService')
+    config.set('General', 'request_url', '/requests')
+    config.set('General', 'results_url', '/results')
+    config.set('General', 'trust_proxy', False)
+    config.set('General', 'ssl_verify', False)
+    config.set('General', 'meta_service_name', 'MetadataService')
+    config.set('General', 'data_service_name', 'DataService')
 
 restoreConfig()
 

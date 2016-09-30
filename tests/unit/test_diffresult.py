@@ -1,5 +1,11 @@
 # -*- coding:utf-8 -*-
 
+"""
+test_diffresult
+----------------------------------
+
+Tests for `DiffResultsHandler` class.
+"""
 import json
 import pytest
 

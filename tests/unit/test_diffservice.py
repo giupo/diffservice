@@ -9,8 +9,6 @@ Tests for `diffservice` module.
 """
 
 import unittest
-from diffservice import diffservice
-
 
 class TestDiffservice(unittest.TestCase):
 
