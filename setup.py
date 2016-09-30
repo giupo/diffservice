@@ -49,7 +49,7 @@ test_requirements = [
 
 setup(
     name='diffservice',
-    version='0.1.4',
+    version='0.1.5',
     description='Service for compare Data and build reports',
     long_description=readme + '\n\n' + history,
     author='Giuseppe Acito',
